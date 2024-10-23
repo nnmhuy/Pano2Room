@@ -533,6 +533,8 @@ class Pano2RoomPipeline(torch.nn.Module):
             'pcd_colors': self.colors.permute(1,0).detach().cpu(),
             'frames': [],
         }
+
+        print("Generating frames:\n")
         for inpainted_pano_images, pano_pose_44 in inpainted_panos_and_poses:
             cubemaps, cubemaps_depth = self.pano_to_cubemap(inpainted_pano_images) # BCHW
             for i in range(len(cubemaps)):
@@ -565,6 +567,7 @@ class Pano2RoomPipeline(torch.nn.Module):
                 ext = "png"
                 file_with_ext = f"{filename}.{ext}"
                 file_out = os.path.join("./frames", file_with_ext)
+                print("Saving", file_out)
                 traindata['frames']['image'].save(file_out)
 
 
