@@ -561,6 +561,12 @@ class Pano2RoomPipeline(torch.nn.Module):
                     'mesh_pose': mesh_pose
                 })
 
+                filename = f"frame_{len(traindata['frames']):04}"
+                ext = "png"
+                file_with_ext = f"{filename}.{ext}"
+                file_out = os.path.join("./frames", file_with_ext)
+                traindata['frames']['image'].save(file_out)
+
 
         self.scene = Scene(traindata, self.gaussians, self.opt)   
         self.train_GS()
