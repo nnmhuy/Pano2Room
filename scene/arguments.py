@@ -16,7 +16,7 @@ class GSParams:
         self.eval = False
         self.use_depth = False
 
-        self.iterations = 3000 
+        self.iterations = 30000 
         self.position_lr_init = 0.00016
         self.position_lr_final = 0.0000016
         self.position_lr_delay_mult = 0.01
