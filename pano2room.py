@@ -524,6 +524,12 @@ class Pano2RoomPipeline(torch.nn.Module):
         self.opt.white_background = True
         bg_color = [1, 1, 1] if self.opt.white_background else [0, 0, 0]
         self.background = torch.tensor(bg_color, dtype=torch.float32, device='cuda')
+
+        # NOTE: x2 number of input vertices and colors to x2 number of initial splats
+        cloned_vertices = self.vertices.clone()
+        cloned_colors = self.colors.clone()
+        self.vertices = torch.cat([self.vertices, cloned_vertices], dim=1)
+        self.colors = torch.cat([self.colors, cloned_colors], dim=1)
         
         traindata = {
             'camera_angle_x': self.cam.fov[0],
@@ -568,7 +574,7 @@ class Pano2RoomPipeline(torch.nn.Module):
                 file_with_ext = f"{filename}.{ext}"
                 file_out = os.path.join("./frames", file_with_ext)
                 print("Saving", file_out)
-                traindata['frames']['image'].save(file_out)
+                traindata['frames'][-1]['image'].save(file_out)
 
 
         self.scene = Scene(traindata, self.gaussians, self.opt)   
