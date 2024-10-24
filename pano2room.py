@@ -47,7 +47,7 @@ class Pano2RoomPipeline(torch.nn.Module):
         self.fov = 90
         self.R, self.T = torch.Tensor([[[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]]), torch.Tensor([[0., 0., 0.]])
         self.pano_width, self.pano_height = 1024 * 2, 512 * 2
-        self.H, self.W = 512, 512
+        self.H, self.W = 1024, 1024
         self.device = "cuda:0"
 
         # initialize
@@ -326,7 +326,7 @@ class Pano2RoomPipeline(torch.nn.Module):
         image = Image.open(image_path)
         if image.size[0] < image.size[1]:
             image = image.transpose(Image.TRANSPOSE)
-        image = functions.resize_image_with_aspect_ratio(image, new_width=self.pano_width)
+        #image = functions.resize_image_with_aspect_ratio(image, new_width=self.pano_width)
         panorama_tensor = torch.tensor(np.array(image))[...,:3].permute(2,0,1).unsqueeze(0).float()/255
         panorama_image_pil = functions.tensor_to_pil(panorama_tensor)
 
@@ -391,7 +391,7 @@ class Pano2RoomPipeline(torch.nn.Module):
             height=self.H,
             width=self.W,
             fov_x=fov,
-            mode="bilinear",
+            mode="bicubic",
         ).unsqueeze(0) # BCHW
 
         return perspective
