@@ -47,7 +47,7 @@ class Pano2RoomPipeline(torch.nn.Module):
         self.fov = 90
         self.R, self.T = torch.Tensor([[[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]]), torch.Tensor([[0., 0., 0.]])
         self.pano_width, self.pano_height = 1024 * 2, 512 * 2
-        self.H, self.W = 512, 512
+        self.H, self.W = 256, 256
         self.device = "cuda:0"
 
         # initialize
