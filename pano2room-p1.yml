@@ -1,4 +1,4 @@
-name: pano2room
+name: pano2roomv1
 channels:
   - pytorch
   - nvidia/label/cuda-11.7.0
