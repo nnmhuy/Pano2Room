@@ -418,7 +418,7 @@ class Pano2RoomPipeline(torch.nn.Module):
         
         iterable_gauss = range(1, self.opt.iterations + 1)
 
-        for iteration in iterable_gauss:
+        for iteration in tqdm(iterable_gauss):
             self.gaussians.update_learning_rate(iteration)
 
             # Pick a random Camera
