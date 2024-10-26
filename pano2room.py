@@ -46,8 +46,8 @@ class Pano2RoomPipeline(torch.nn.Module):
         self.faces_per_pixel = 8
         self.fov = 90
         self.R, self.T = torch.Tensor([[[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]]), torch.Tensor([[0., 0., 0.]])
-        self.pano_width, self.pano_height = 1024 * 2, 512 * 2
-        self.H, self.W = 1080, 1080
+        self.pano_width, self.pano_height = 2048 * 2, 1024 * 2
+        self.H, self.W = 1920, 1920
         self.device = "cuda:0"
 
         # initialize
@@ -528,8 +528,8 @@ class Pano2RoomPipeline(torch.nn.Module):
         # NOTE: x2 number of input vertices and colors to x2 number of initial splats
         cloned_vertices = self.vertices.clone()
         cloned_colors = self.colors.clone()
-        self.vertices = torch.cat([self.vertices, cloned_vertices,cloned_vertices.clone()], dim=1)
-        self.colors = torch.cat([self.colors, cloned_colors,cloned_colors.clone()], dim=1)
+        self.vertices = torch.cat([self.vertices, cloned_vertices,cloned_vertices.clone(),cloned_vertices.clone()], dim=1)
+        self.colors = torch.cat([self.colors, cloned_colors,cloned_colors.clone(),cloned_vertices.clone()], dim=1)
         
         traindata = {
             'camera_angle_x': self.cam.fov[0],
