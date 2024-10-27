@@ -43,11 +43,11 @@ class Pano2RoomPipeline(torch.nn.Module):
 
         # renderer setting
         self.blur_radius = 0
-        self.faces_per_pixel = 8
+        self.faces_per_pixel = 16
         self.fov = 90
         self.R, self.T = torch.Tensor([[[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]]), torch.Tensor([[0., 0., 0.]])
         self.pano_width, self.pano_height = 1024 * 2, 512 * 2
-        self.H, self.W = 1080, 1080
+        self.H, self.W = 1024, 2048
         self.device = "cuda:0"
 
         # initialize
@@ -158,7 +158,7 @@ class Pano2RoomPipeline(torch.nn.Module):
             faces=self.faces,
             vertices=self.vertices,
             using_distance_map=using_distance_map,
-            edge_threshold=0.05
+            edge_threshold=0.02
         )
 
         faces += self.vertices.shape[1] 
@@ -315,7 +315,7 @@ class Pano2RoomPipeline(torch.nn.Module):
                                                                     distances,
                                                                     mask=mask,
                                                                     reg_loss_weight=0.,
-                                                                    normal_loss_weight=5e-2,
+                                                                    normal_loss_weight=1e-1,
                                                                     normal_tv_loss_weight=5e-2)
 
         inpainted_distances = inpainted_distances.squeeze()
@@ -406,6 +406,7 @@ class Pano2RoomPipeline(torch.nn.Module):
         # collect fov 90 cubemaps
         for view_idx, (pitch, yaw) in enumerate(pitch_yaw_list):
             view_rgb = self.pano_to_perpective(pano_tensor, pitch, yaw, 90)
+            view_rgb = view_rgb.cpu().clone() 
             cubemaps += [view_rgb.cpu().clone()]
             if pano_depth_tensor is not None:
                 view_depth = self.pano_to_perpective(pano_depth_tensor.unsqueeze(0).unsqueeze(0), pitch, yaw, 90)
@@ -528,8 +529,8 @@ class Pano2RoomPipeline(torch.nn.Module):
         # NOTE: x2 number of input vertices and colors to x2 number of initial splats
         cloned_vertices = self.vertices.clone()
         cloned_colors = self.colors.clone()
-        self.vertices = torch.cat([self.vertices, cloned_vertices,cloned_vertices.clone(),cloned_vertices.clone()], dim=1)
-        self.colors = torch.cat([self.colors, cloned_colors,cloned_colors.clone(),cloned_vertices.clone()], dim=1)
+        self.vertices = torch.cat([self.vertices, cloned_vertices], dim=1)
+        self.colors = torch.cat([self.colors, cloned_colors], dim=1)
         
         traindata = {
             'camera_angle_x': self.cam.fov[0],
